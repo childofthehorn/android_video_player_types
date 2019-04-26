@@ -113,16 +113,17 @@
         android:textColor="#FFBEBEBE"
         />
 
-      <ImageButton
-          android:id="@+id/exo_fullscreen_button"
-          android:layout_width="32dp"
-          android:layout_height="32dp"
-          android:padding="2dp"
-          android:background="@android:color/transparent"
-          android:layout_gravity="end"
-          android:adjustViewBounds="true"
-          android:scaleType="fitCenter"
-          android:src="@drawable/ic_fullscreen_white_24dp"/>
+    <ImageButton
+        android:id="@+id/exo_fullscreen_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:padding="2dp"
+        android:background="@android:color/transparent"
+        android:layout_gravity="end"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_fullscreen_white_24dp"
+        />
 
   </LinearLayout>
 

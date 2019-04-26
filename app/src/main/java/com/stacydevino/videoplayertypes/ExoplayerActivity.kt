@@ -21,13 +21,13 @@ import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.activity_exoplayer.*
 import kotlinx.android.synthetic.main.exoplayer_media_controls_custom.exo_fullscreen_button
 
+
 class ExoplayerActivity : AppCompatActivity() {
 
   companion object {
-    @JvmField
-    val ARG_VIDEO_URL = "ExoplayerActivity.URL"
-    val ARG_VIDEO_POSITION = "ExoplayerActivity.POSITION"
-    val ARG_VIDEO_URL_LIST = "ExoplayerActivity.URL_LIST"
+    const val ARG_VIDEO_URL = "ExoplayerActivity.URL"
+    const val ARG_VIDEO_POSITION = "ExoplayerActivity.POSITION"
+    const val ARG_VIDEO_URL_LIST = "ExoplayerActivity.URL_LIST"
   }
 
   private var videoUrl: String? = null
@@ -73,7 +73,7 @@ class ExoplayerActivity : AppCompatActivity() {
 
     playerView.player = player
 
-    videoUrl?.let { setPlayerMedia() }
+    videoUrl?.let { setSinglePlayerMedia() }
 
     //playlists
     videoUrlList?.let { player.prepare(createPlaylist(it))}
@@ -87,7 +87,7 @@ class ExoplayerActivity : AppCompatActivity() {
     mediaSession.isActive = true
   }
 
-  private fun setPlayerMedia(){
+  private fun setSinglePlayerMedia(){
     val dataSourceFactory =
       DefaultDataSourceFactory(
           this,
@@ -182,18 +182,19 @@ class ExoplayerActivity : AppCompatActivity() {
     val mediaSourceList = ConcatenatingMediaSource()
 
     for (url in urlArray) {
-      when (Util.inferContentType(Uri.parse(url))) {
+      val uri = Uri.parse(url)
+      when (Util.inferContentType(uri)) {
         C.TYPE_HLS -> {
           val mediaSource = HlsMediaSource
               .Factory(dataSourceFactory)
-              .createMediaSource(Uri.parse(url))
+              .createMediaSource(uri)
           mediaSourceList.addMediaSource(mediaSource)
         }
 
         C.TYPE_OTHER -> {
           val mediaSource = ExtractorMediaSource
               .Factory(dataSourceFactory)
-              .createMediaSource(Uri.parse(url))
+              .createMediaSource(uri)
           mediaSourceList.addMediaSource(mediaSource)
         }
 

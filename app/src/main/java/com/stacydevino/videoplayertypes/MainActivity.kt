@@ -8,9 +8,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+  /* DASH stream : https://dlc.nike.com/ntc/select/videos/TearsOfSteel_Profile_4k_3840x1714/TearsOfSteel_Profile_4k_3840x1714.mpd */
+
   /* Sample public HLS Streams */
   var videoUrlArray = arrayOf(
       "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
+    //This link is MBR - Multi-bit-rate
+      "https://dlc.nike.com/ntc/select/videos/TearsOfSteel_Profile_4k_3840x1714/TearsOfSteel_Profile_4k_3840x1714.m3u8",
       "https://content.jwplatform.com/manifests/yp34SRmf.m3u8",
       "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
       "https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8",

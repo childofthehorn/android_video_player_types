@@ -10,8 +10,7 @@ import android.widget.MediaController
 class VideoViewActivity : AppCompatActivity() {
 
     companion object {
-        @JvmField
-        val ARG_VIDEO_URL = "VideoView.URL"
+        const val ARG_VIDEO_URL = "VideoView.URL"
     }
 
     private lateinit var videoUrl: String
