@@ -8,14 +8,12 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
-import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.activity_exoplayer.*
@@ -49,27 +47,25 @@ class ExoplayerActivity : AppCompatActivity() {
 
     savedInstanceState?.let { videoPosition = savedInstanceState.getLong(ARG_VIDEO_POSITION) }
 
-    /* Adding a custom Layout with Button!
+    /* Adding a custom Layout with Button! */
     setFullscreenBtnImage(getOrientation())
 
     exo_fullscreen_button.setOnClickListener {
-      if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE) {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+      requestedOrientation = if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE) {
+        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
       } else {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
       }
       //Do whatever the sensor wants after user moves phone position
       Handler().postDelayed(
-          { setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR) }, 5000)
+          { requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR }, 5000)
     }
-     */
   }
 
   override fun onStart() {
     super.onStart()
 
-    player = ExoPlayerFactory
-        .newSimpleInstance(this, DefaultTrackSelector())
+    player = SimpleExoPlayer.Builder(this).build()
 
     playerView.player = player
 
@@ -83,7 +79,7 @@ class ExoplayerActivity : AppCompatActivity() {
     //Use Media Session Connector from the EXT library to enable MediaSession Controls in PIP.
     mediaSession = MediaSessionCompat(this, packageName)
     val mediaSessionConnector = MediaSessionConnector(mediaSession)
-    mediaSessionConnector.setPlayer(player, null)
+    mediaSessionConnector.setPlayer(player)
     mediaSession.isActive = true
   }
 
@@ -107,7 +103,7 @@ class ExoplayerActivity : AppCompatActivity() {
       }
 
       C.TYPE_OTHER -> {
-        val mediaSource = ExtractorMediaSource
+        val mediaSource = ProgressiveMediaSource
             .Factory(dataSourceFactory)
             .createMediaSource(Uri.parse(videoUrl))
         player.prepare(mediaSource)
@@ -142,7 +138,7 @@ class ExoplayerActivity : AppCompatActivity() {
     player.playWhenReady = true
   }
 
-  /* Adding a custom Layout with Button!
+  /* Adding a custom Layout with Button! */
 
   override fun onConfigurationChanged(newConfig: Configuration) {
     super.onConfigurationChanged(newConfig)
@@ -150,8 +146,8 @@ class ExoplayerActivity : AppCompatActivity() {
   }
 
   private fun getOrientation(): Int {
-    return this.getResources()
-        .getConfiguration()
+    return this.resources
+        .configuration
         .orientation
   }
 
@@ -168,7 +164,7 @@ class ExoplayerActivity : AppCompatActivity() {
       }
     }
   }
-   */
+
 
   /* Playlists of Videos */
   private fun createPlaylist(urlArray : Array<String>) : ConcatenatingMediaSource{
@@ -192,7 +188,7 @@ class ExoplayerActivity : AppCompatActivity() {
         }
 
         C.TYPE_OTHER -> {
-          val mediaSource = ExtractorMediaSource
+          val mediaSource = ProgressiveMediaSource
               .Factory(dataSourceFactory)
               .createMediaSource(uri)
           mediaSourceList.addMediaSource(mediaSource)
