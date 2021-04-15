@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
@@ -94,19 +95,24 @@ class ExoplayerActivity : AppCompatActivity() {
           )
       )
 
+    val uri = Uri.parse(videoUrl)
+    val mediaItem  = MediaItem.fromUri(uri)
+
     when (Util.inferContentType(Uri.parse(videoUrl))) {
       C.TYPE_HLS -> {
         val mediaSource = HlsMediaSource
-            .Factory(dataSourceFactory)
-            .createMediaSource(Uri.parse(videoUrl))
-        player.prepare(mediaSource)
+          .Factory(dataSourceFactory)
+          .createMediaSource(mediaItem)
+        player.setMediaSource(mediaSource)
+        player.prepare()
       }
 
       C.TYPE_OTHER -> {
         val mediaSource = ProgressiveMediaSource
-            .Factory(dataSourceFactory)
-            .createMediaSource(Uri.parse(videoUrl))
-        player.prepare(mediaSource)
+          .Factory(dataSourceFactory)
+          .createMediaSource(mediaItem)
+        player.setMediaSource(mediaSource)
+        player.prepare()
       }
 
       else -> {
@@ -179,18 +185,19 @@ class ExoplayerActivity : AppCompatActivity() {
 
     for (url in urlArray) {
       val uri = Uri.parse(url)
+      val mediaItem  = MediaItem.fromUri(uri)
       when (Util.inferContentType(uri)) {
         C.TYPE_HLS -> {
           val mediaSource = HlsMediaSource
-              .Factory(dataSourceFactory)
-              .createMediaSource(uri)
+            .Factory(dataSourceFactory)
+            .createMediaSource(mediaItem)
           mediaSourceList.addMediaSource(mediaSource)
         }
 
         C.TYPE_OTHER -> {
           val mediaSource = ProgressiveMediaSource
-              .Factory(dataSourceFactory)
-              .createMediaSource(uri)
+            .Factory(dataSourceFactory)
+            .createMediaSource(mediaItem)
           mediaSourceList.addMediaSource(mediaSource)
         }
 

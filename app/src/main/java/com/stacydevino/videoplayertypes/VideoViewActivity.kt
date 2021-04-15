@@ -23,7 +23,7 @@ class VideoViewActivity : AppCompatActivity() {
             finish()
         }
 
-        videoUrl = intent.getStringExtra(VideoViewActivity.ARG_VIDEO_URL)
+        videoUrl = intent.getStringExtra(VideoViewActivity.ARG_VIDEO_URL).toString()
 
         videoView.setVideoURI(Uri.parse(videoUrl))
 
