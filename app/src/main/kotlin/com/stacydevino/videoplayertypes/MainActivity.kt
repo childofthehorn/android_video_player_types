@@ -4,9 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_main.*
+import com.stacydevino.videoplayertypes.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+  val layoutBinding by lazy { ActivityMainBinding.inflate(layoutInflater)}
 
   /* DASH stream : https://dlc.nike.com/ntc/select/videos/TearsOfSteel_Profile_4k_3840x1714/TearsOfSteel_Profile_4k_3840x1714.mpd */
 
@@ -22,15 +24,15 @@ class MainActivity : AppCompatActivity() {
       "http://www.streambox.fr/playlists/test_001/stream.m3u8"
   )
 
-  var videoUrl = "https://content.jwplatform.com/manifests/yp34SRmf.m3u8"
+  var videoUrl = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-    videoIntentBtn.setOnClickListener { onStartVideoIntent() }
-    videoViewBtn.setOnClickListener { onStartVideoView() }
-    exoplayerBtn.setOnClickListener { onStartExoplayerVideo() }
-    exoplayerListBtn.setOnClickListener { onStartExoplayerVideoList() }
+    setContentView(layoutBinding.root)
+    layoutBinding.videoIntentBtn.setOnClickListener { onStartVideoIntent() }
+    layoutBinding.videoViewBtn.setOnClickListener { onStartVideoView() }
+    layoutBinding.exoplayerBtn.setOnClickListener { onStartExoplayerVideo() }
+    layoutBinding.exoplayerListBtn.setOnClickListener { onStartExoplayerVideoList() }
   }
 
   fun onStartVideoIntent() {

@@ -6,6 +6,8 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.MediaItem
@@ -13,12 +15,10 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import kotlinx.android.synthetic.main.activity_exoplayer.*
-import kotlinx.android.synthetic.main.exoplayer_media_controls_custom.exo_fullscreen_button
+import com.stacydevino.videoplayertypes.databinding.ActivityExoplayerBinding
 
 
 class ExoplayerActivity : AppCompatActivity() {
@@ -34,10 +34,14 @@ class ExoplayerActivity : AppCompatActivity() {
   private lateinit var player: SimpleExoPlayer
   private var videoPosition: Long = 0L
   private lateinit var mediaSession: MediaSessionCompat
+  private lateinit var fullscreenButton: ImageButton
+
+  val layoutBinding by lazy { ActivityExoplayerBinding.inflate(layoutInflater) }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_exoplayer)
+    setContentView(layoutBinding.root)
+    fullscreenButton = layoutBinding.playerView.findViewById(R.id.exo_fullscreen_button)
 
     if (intent.extras == null){
       finish()
@@ -51,14 +55,14 @@ class ExoplayerActivity : AppCompatActivity() {
     /* Adding a custom Layout with Button! */
     setFullscreenBtnImage(getOrientation())
 
-    exo_fullscreen_button.setOnClickListener {
+    fullscreenButton.setOnClickListener {
       requestedOrientation = if (getOrientation() == Configuration.ORIENTATION_LANDSCAPE) {
         ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
       } else {
         ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
       }
       //Do whatever the sensor wants after user moves phone position
-      Handler().postDelayed(
+      Handler(Looper.getMainLooper()).postDelayed(
           { requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR }, 5000)
     }
   }
@@ -68,12 +72,15 @@ class ExoplayerActivity : AppCompatActivity() {
 
     player = SimpleExoPlayer.Builder(this).build()
 
-    playerView.player = player
+    layoutBinding.playerView.player = player
 
     videoUrl?.let { setSinglePlayerMedia() }
 
     //playlists
-    videoUrlList?.let { player.prepare(createPlaylist(it))}
+    videoUrlList?.let {
+      player.setMediaSource(createPlaylist(it))
+      player.prepare()
+    }
 
     player.playWhenReady = true
 
@@ -126,7 +133,7 @@ class ExoplayerActivity : AppCompatActivity() {
   override fun onStop() {
     super.onStop()
     mediaSession.isActive = false
-    playerView.player = null
+    layoutBinding.playerView.player = null
     player.release()
   }
 
@@ -160,13 +167,13 @@ class ExoplayerActivity : AppCompatActivity() {
   private fun setFullscreenBtnImage(screenOrientation: Int) {
     when (screenOrientation) {
       Configuration.ORIENTATION_PORTRAIT -> {
-        exo_fullscreen_button.setImageResource(R.drawable.ic_fullscreen_white_24dp)
+        fullscreenButton.setImageResource(R.drawable.ic_fullscreen_white_24dp)
       }
       Configuration.ORIENTATION_LANDSCAPE -> {
-        exo_fullscreen_button.setImageResource(R.drawable.ic_fullscreen_exit_white_24dp)
+        fullscreenButton.setImageResource(R.drawable.ic_fullscreen_exit_white_24dp)
       }
       Configuration.ORIENTATION_UNDEFINED -> {
-        exo_fullscreen_button.setImageResource(R.drawable.ic_fullscreen_exit_white_24dp)
+        fullscreenButton.setImageResource(R.drawable.ic_fullscreen_exit_white_24dp)
       }
     }
   }
