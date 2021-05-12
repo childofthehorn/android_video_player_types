@@ -3,38 +3,49 @@ import java.util.Date
 
 // Declare Plugins in a Block
 plugins {
-    id("com.android.application")
+    id(Plugins.Id.app)
     // You can do either kotlin() or id() depending on the Plugin
-    kotlin("android")
-    kotlin("kapt")
-    id("kotlin-android")
-    id("com.google.firebase.firebase-perf")
+    kotlin(Plugins.Kotlin.androidBase)
+    kotlin(Plugins.Kotlin.kapt)
+    id(Plugins.Kotlin.android)
+    id(Plugins.Id.firebasePerf)
+    id(Plugins.Kotlin.dokka)
 }
 
 // Every in Kotlin Gradle DSL parameter will have an = or set()
 android {
-    compileSdkVersion(30)
-    buildToolsVersion("30.0.3")
+    compileSdkVersion(Sdk.compile)
+    buildToolsVersion(Versions.buildToolsVersion)
 
-    useLibrary("android.test.runner")
-    useLibrary("android.test.base")
-    useLibrary("android.test.mock")
+    useLibrary(Versions.UseLibs.testRunner)
+    useLibrary(Versions.UseLibs.testBase)
+    useLibrary(Versions.UseLibs.testMock)
 
     defaultConfig {
-        applicationId = "com.stacydevino.videoplayertypes"
-        minSdkVersion(22)
-        targetSdkVersion(30)
-        versionCode = timestampVersionCode() // Dynamically generated Timestamps!
-        versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        applicationId = Versions.appName
+        minSdkVersion(Sdk.min)
+        targetSdkVersion(Sdk.target)
+        versionCode = Utils.timestampVersionCode() // Dynamically generated Timestamps!
+        versionName = Versions.appVersion
+        testInstrumentationRunner = Deps.Test.instrumentationRunner
     }
+
     buildTypes {
         // notice that `release` was replaced with `getByName("release")`
         // All Strings must be declared
-        getByName("release") {
+        getByName(ProductTypes.release) {
             isMinifyEnabled = true
             isShrinkResources = true
             isCrunchPngs = true
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+        }
+
+        getByName(ProductTypes.debug) {
+            isMinifyEnabled = false
+            isShrinkResources = false
+            isCrunchPngs = false
+            applicationIdSuffix = ProductTypes.debugId
+            versionNameSuffix = ProductTypes.debugSuffix
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
@@ -53,6 +64,17 @@ android {
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin")
     }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        //unitTests.isReturnDefaultValues = true // Only for debugging when writing Tests
+    }
+
+    // This suppresses an error saying 'More than one file was found with OS independent path'.
+    packagingOptions {
+        exclude("README.txt")
+        exclude("README.md")
+    }
 }
 
 dependencies {
@@ -60,50 +82,49 @@ dependencies {
     // Enforce configurations to avoid versioning conflicts with 3rd party libs
     configurations.all {
         // Enforce latest android support annotations for all dependencies
-        resolutionStrategy.force("com.android.support:support-annotations:1.0.0")
+        resolutionStrategy.force(Deps.supportAnnotations)
 
         //This subdependency is included in the Android SDK and can easily cause conflicts
         exclude(group = "commons-logging", module = "commons-logging")
     }
 
-
     //General, JIC you include a local library
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     //Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.4.32")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
+    implementation(Deps.Kotlin.kotlinStd)
+    implementation(Deps.Kotlin.kotlin)
 
     //AndroidX
-    implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("androidx.core:core-ktx:1.3.2")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+    implementation(Deps.AndroidX.appcompat)
+    implementation(Deps.AndroidX.ktxCore)
+    implementation(Deps.AndroidX.UI.constraintLayout)
 
     // Material
-    implementation("com.google.android.material:material:1.3.0")
+    implementation(Deps.material)
 
     //Testing
-    testImplementation("androidx.arch.core:core-testing:2.1.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
-    testImplementation("io.mockk:mockk:1.11.0")
-    androidTestImplementation("io.mockk:mockk:1.11.0")
-    androidTestImplementation("io.mockk:mockk-android:1.11.0")
+    testImplementation(Deps.AndroidX.Test.archTest)
+    testImplementation(Deps.Test.junit)
+    androidTestImplementation(Deps.AndroidX.Test.junitExt)
+    androidTestImplementation(Deps.Test.Espresso.core)
+    testImplementation(Deps.Test.Mockk.core)
+    androidTestImplementation(Deps.Test.Mockk.core)
+    androidTestImplementation(Deps.Test.Mockk.android)
 
     //Exoplayer
-    implementation("com.google.android.exoplayer:exoplayer-core:2.13.3")
-    implementation("com.google.android.exoplayer:exoplayer-hls:2.13.3")
-    implementation("com.google.android.exoplayer:exoplayer-ui:2.13.3")
-    implementation("com.google.android.exoplayer:extension-mediasession:2.13.3")
+    implementation(Deps.Exoplayer.core)
+    implementation(Deps.Exoplayer.hls)
+    implementation(Deps.Exoplayer.ui)
+    implementation(Deps.Exoplayer.mediaSession)
 
     // Firebase BoM https://firebase.google.com/docs/android/learn-more#bom
     // Notice that Platforms can be declared inline
-    implementation(platform("com.google.firebase:firebase-bom:27.1.0"))
-    implementation("com.google.firebase:firebase-perf-ktx")
+    implementation(platform(Deps.Firebase.firebaseBom))
+    implementation(Deps.Firebase.firebasePerformance)
 
     // Debug
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
+    debugImplementation(Deps.DevTools.leakCanary)
 }
 
 // Helpful error handling and build speed
@@ -114,13 +135,6 @@ kapt {
 
 configurations.all {
     resolutionStrategy.cacheDynamicVersionsFor(0, "seconds")
-}
-
-// Kotlin Functions!
-fun timestampVersionCode(): Int {
-    val dateStampInt = Integer.parseInt(SimpleDateFormat("yyyyMMddHH").format(Date()))
-    println("\nDatestamp version code generated: $dateStampInt\n")
-    return dateStampInt
 }
 
 // Adding Dokka Autogen Docs

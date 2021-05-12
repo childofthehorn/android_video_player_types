@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.github.ben-manes.versions") version "0.38.0"
+    id(Plugins.Id.dependencyUpdate) version Versions.dependencyUpdate
 }
 
 buildscript {
@@ -18,11 +18,11 @@ buildscript {
         maven{ url = uri("https://dl.bintray.com/kotlin/dokka")} // TODO : Bintray
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.3")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32")
-        classpath("com.google.firebase:perf-plugin:1.3.5")
+        classpath(Plugins.androidTools)
+        classpath(Plugins.kotlinGradle)
+        classpath(Plugins.firebasePerformance)
         //Dokka Support for autogen Documentation
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
+        classpath(Plugins.dokka)
     }
 }
 
