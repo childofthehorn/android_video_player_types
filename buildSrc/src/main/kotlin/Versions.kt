@@ -16,7 +16,7 @@ object Versions {
     const val dokka = "1.4.32"
 
     // Gradle
-    const val androidTools = "4.2.0-beta06"
+    const val androidTools = "4.2.1"
     const val buildToolsVersion = "30.0.2"
 
     // Android

@@ -1,6 +1,3 @@
-import java.text.SimpleDateFormat
-import java.util.Date
-
 // Declare Plugins in a Block
 plugins {
     id(Plugins.Id.app)
@@ -14,6 +11,16 @@ plugins {
 
 // Every in Kotlin Gradle DSL parameter will have an = or set()
 android {
+
+    //Use the module project to source the folder for proguard files
+    val proguardFolderList =
+        files(
+            file("./proguard")
+                .listFiles(ProguardFilter())
+        )
+        .toList()
+        .toTypedArray()
+
     compileSdkVersion(Sdk.compile)
     buildToolsVersion(Versions.buildToolsVersion)
 
@@ -37,7 +44,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             isCrunchPngs = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(*proguardFolderList)
         }
 
         getByName(ProductTypes.debug) {
@@ -46,7 +53,7 @@ android {
             isCrunchPngs = false
             applicationIdSuffix = ProductTypes.debugId
             versionNameSuffix = ProductTypes.debugSuffix
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(*proguardFolderList)
         }
     }
 

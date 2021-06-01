@@ -1,5 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
+    // Note that this is one of the ways you can declare versions, inline or separated
     id(Plugins.Id.dependencyUpdate) version Versions.dependencyUpdate
 }
 
@@ -21,7 +22,7 @@ buildscript {
         classpath(Plugins.androidTools)
         classpath(Plugins.kotlinGradle)
         classpath(Plugins.firebasePerformance)
-        //Dokka Support for autogen Documentation
+        // Dokka Support for autogen Documentation
         classpath(Plugins.dokka)
     }
 }

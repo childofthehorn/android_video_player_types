@@ -19,5 +19,5 @@ kotlinDslPluginOptions {
 }
 
 dependencies {
-    implementation("com.android.tools.build:gradle:4.2.0-rc01")
+    implementation("com.android.tools.build:gradle:4.2.1")
 }
